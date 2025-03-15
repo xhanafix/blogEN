@@ -1,14 +1,15 @@
 # AI Article Generator
 
 ![AI Article Generator](https://img.shields.io/badge/AI-Article%20Generator-4361ee)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A powerful web-based tool that leverages OpenRouter API to generate high-quality, SEO-optimized articles on any topic. This application provides a user-friendly interface for creating professional content with customizable settings.
+A powerful web-based tool that leverages OpenRouter API to generate high-quality, SEO-optimized articles on any topic. This application provides a user-friendly interface for creating professional content with customizable settings in both English and Bahasa Malaysia.
 
 ## 🌟 Features
 
 - **AI-Powered Content Generation**: Create comprehensive articles with introduction, main content, conclusion, and FAQ sections
+- **Multilingual Support**: Generate content in English or Bahasa Malaysia
 - **Personal Writing Style**: Generate content in a personal, first-person voice with colloquial expressions and conversational tone
 - **SEO Optimization**: Automatically generates SEO metadata including focus keywords, meta descriptions, and image alt text
 - **Customizable Settings**:
@@ -47,7 +48,7 @@ A powerful web-based tool that leverages OpenRouter API to generate high-quality
 1. Open `index.html` in your web browser
 2. Enter your OpenRouter API key (get one at [OpenRouter.ai](https://openrouter.ai))
 3. Enter your article topic
-4. Adjust advanced settings if desired (model, temperature, word count, tone)
+4. Adjust advanced settings if desired (model, temperature, word count, tone, language)
 5. Click "Generate Article" or press Ctrl+Enter
 6. Wait for the generation process to complete
 7. Use the control buttons to save, copy, download, or print your article
@@ -94,12 +95,20 @@ The application uses a modular approach with separate files:
 - Fixed theme toggle issues
 - Added comprehensive documentation
 
-### Version 1.3.0 (Current)
+### Version 1.3.0 (2024-07-15)
 - Added personal, colloquial writing style as the default tone
 - Enhanced prompts to generate more authentic, first-person content
 - Improved SEO metadata to match the personal writing style
 - Increased default creativity setting for more natural language
 - Updated UI to prioritize personal writing options
+
+### Version 1.4.0 (Current)
+- Added Bahasa Malaysia language support
+- Implemented language selection in advanced settings
+- Added language indicator for saved articles
+- Updated UI text to support both languages
+- Enhanced prompts for Bahasa Malaysia content generation
+- Improved error messages with multilingual support
 
 ## 🔮 Planned Features
 
@@ -108,7 +117,7 @@ The application uses a modular approach with separate files:
 - Image generation integration
 - Export to more formats (PDF, HTML, DOCX)
 - Advanced SEO analysis tools
-- Multi-language support
+- Support for more languages
 
 ## 🤝 Contributing
 

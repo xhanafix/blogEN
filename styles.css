@@ -971,4 +971,13 @@ button i {
     .seo-metadata {
         display: none !important;
     }
+}
+
+.article-language {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 } 

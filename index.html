@@ -24,13 +24,13 @@
         
         <div class="input-section">
             <div class="form-group">
-                <label for="topic">Article Topic:</label>
+                <label for="topic" id="topicLabel">Article Topic:</label>
                 <input type="text" id="topic" placeholder="Enter your article topic" aria-required="true">
                 <div id="topicError" class="error-message"></div>
             </div>
             
             <div class="form-group">
-                <label for="apiKey">OpenRouter API Key:</label>
+                <label for="apiKey" id="apiKeyLabel">OpenRouter API Key:</label>
                 <div class="password-input-container">
                     <input type="password" id="apiKey" placeholder="Enter your API key" aria-required="true">
                     <button type="button" id="togglePassword" class="toggle-password" aria-label="Show/Hide password">
@@ -38,14 +38,14 @@
                     </button>
                 </div>
                 <div id="apiKeyError" class="error-message"></div>
-                <small class="help-text">Get your API key at <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a></small>
+                <small class="help-text" id="apiKeyHelp">Get your API key at <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a></small>
             </div>
             
             <div class="advanced-options">
                 <details>
-                    <summary>Advanced Settings</summary>
+                    <summary id="advancedSettingsLabel">Advanced Settings</summary>
                     <div class="form-group">
-                        <label for="modelSelect">AI Model:</label>
+                        <label for="modelSelect" id="modelSelectLabel">AI Model:</label>
                         <select id="modelSelect">
                             <option value="google/learnlm-1.5-pro-experimental:free">Google LearnLM 1.5 Pro (Free)</option>
                             <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
@@ -55,18 +55,18 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="temperatureSlider">Creativity (Temperature):</label>
+                        <label for="temperatureSlider" id="temperatureLabel">Creativity (Temperature):</label>
                         <div class="slider-container">
                             <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.8">
                             <span id="temperatureValue">0.8</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="wordCountTarget">Target Word Count:</label>
+                        <label for="wordCountTarget" id="wordCountLabel">Target Word Count:</label>
                         <input type="number" id="wordCountTarget" min="500" max="5000" step="100" value="2000">
                     </div>
                     <div class="form-group">
-                        <label for="toneSelect">Writing Tone:</label>
+                        <label for="toneSelect" id="toneSelectLabel">Writing Tone:</label>
                         <select id="toneSelect">
                             <option value="personal">Personal & Colloquial</option>
                             <option value="conversational">Conversational</option>
@@ -74,6 +74,13 @@
                             <option value="professional">Professional</option>
                             <option value="academic">Academic</option>
                             <option value="persuasive">Persuasive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="languageSelect" id="languageSelectLabel">Output Language:</label>
+                        <select id="languageSelect">
+                            <option value="english">English</option>
+                            <option value="malay">Bahasa Malaysia</option>
                         </select>
                     </div>
                 </details>
@@ -135,9 +142,9 @@
         <div id="saveModal" class="modal">
             <div class="modal-content">
                 <span class="close-button">&times;</span>
-                <h2>Save Article</h2>
+                <h2 id="saveModalTitle">Save Article</h2>
                 <div class="form-group">
-                    <label for="articleName">Article Name:</label>
+                    <label for="articleName" id="articleNameLabel">Article Name:</label>
                     <input type="text" id="articleName" placeholder="Enter a name for this article">
                 </div>
                 <button id="saveArticleButton" class="primary-button">Save</button>

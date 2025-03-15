@@ -8,7 +8,8 @@ const LOCAL_STORAGE_KEYS = {
     MODEL: 'selectedModel',
     TEMPERATURE: 'temperature',
     WORD_COUNT: 'wordCountTarget',
-    TONE: 'writingTone'
+    TONE: 'writingTone',
+    LANGUAGE: 'outputLanguage'
 };
 
 // Initialize the application
@@ -17,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Ensure theme toggle works immediately
     document.getElementById('themeToggle').onclick = toggleTheme;
+    
+    // Add language change event to update UI text
+    document.getElementById('languageSelect').addEventListener('change', updateUILanguage);
 });
 
 function initializeApp() {
@@ -32,6 +36,9 @@ function initializeApp() {
         
         // Update theme toggle button text
         updateThemeToggleText();
+        
+        // Update UI text based on language
+        updateUILanguage();
         
         console.log('Application initialized successfully');
     } catch (error) {
@@ -87,6 +94,12 @@ function loadSavedSettings() {
     if (savedTone && document.getElementById('toneSelect')) {
         document.getElementById('toneSelect').value = savedTone;
     }
+    
+    // Load language preference
+    const savedLanguage = localStorage.getItem(LOCAL_STORAGE_KEYS.LANGUAGE);
+    if (savedLanguage && document.getElementById('languageSelect')) {
+        document.getElementById('languageSelect').value = savedLanguage;
+    }
 }
 
 function initializeEventListeners() {
@@ -138,6 +151,14 @@ function initializeEventListeners() {
     if (toneSelect) {
         toneSelect.addEventListener('change', (e) => {
             localStorage.setItem(LOCAL_STORAGE_KEYS.TONE, e.target.value);
+        });
+    }
+    
+    // Language select
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', (e) => {
+            localStorage.setItem(LOCAL_STORAGE_KEYS.LANGUAGE, e.target.value);
         });
     }
     
@@ -264,35 +285,68 @@ function getWordCount(text) {
     return text.trim().split(/\s+/).length;
 }
 
-function createSegmentPrompt(topic, section, wordCount, tone) {
+function createSegmentPrompt(topic, section, wordCount, tone, language) {
     const toneInstructions = {
-        professional: "Use a formal, authoritative tone with industry-specific terminology where appropriate.",
-        casual: "Use a relaxed, conversational tone with simple language and occasional colloquialisms.",
-        academic: "Use a scholarly tone with precise language, citations, and well-structured arguments.",
-        conversational: "Write as if having a friendly conversation with the reader, using questions and personal pronouns.",
-        persuasive: "Use compelling language with strong calls to action and emotional appeals.",
-        personal: "Write in first person (I, me, my) with a highly personal, authentic voice. Use colloquial expressions, contractions, and casual language as if sharing your own experiences and thoughts with a friend. Include personal anecdotes and relatable examples where appropriate."
+        professional: {
+            english: "Use a formal, authoritative tone with industry-specific terminology where appropriate.",
+            malay: "Gunakan nada formal dan berwibawa dengan terminologi khusus industri jika sesuai."
+        },
+        casual: {
+            english: "Use a relaxed, conversational tone with simple language and occasional colloquialisms.",
+            malay: "Gunakan nada santai dan percakapan dengan bahasa yang mudah dan sesekali ungkapan sehari-hari."
+        },
+        academic: {
+            english: "Use a scholarly tone with precise language, citations, and well-structured arguments.",
+            malay: "Gunakan nada akademik dengan bahasa yang tepat, petikan, dan hujah yang terstruktur dengan baik."
+        },
+        conversational: {
+            english: "Write as if having a friendly conversation with the reader, using questions and personal pronouns.",
+            malay: "Tulis seolah-olah sedang berbual mesra dengan pembaca, menggunakan soalan dan kata ganti nama peribadi."
+        },
+        persuasive: {
+            english: "Use compelling language with strong calls to action and emotional appeals.",
+            malay: "Gunakan bahasa yang meyakinkan dengan seruan tindakan yang kuat dan rayuan emosi."
+        },
+        personal: {
+            english: "Write in first person (I, me, my) with a highly personal, authentic voice. Use colloquial expressions, contractions, and casual language as if sharing your own experiences and thoughts with a friend. Include personal anecdotes and relatable examples where appropriate.",
+            malay: "Tulis dalam orang pertama (saya, aku) dengan suara peribadi dan autentik. Gunakan ungkapan sehari-hari dan bahasa santai seolah-olah berkongsi pengalaman dan pemikiran anda sendiri dengan rakan. Sertakan anekdot peribadi dan contoh yang berkaitan jika sesuai."
+        }
     };
     
-    const toneInstruction = toneInstructions[tone] || toneInstructions.personal;
+    const toneInstruction = toneInstructions[tone]?.[language] || toneInstructions.personal[language];
     
     const prompts = {
-        introduction: `Write an engaging introduction (exactly ${wordCount} words) for an article about "${topic}". 
-            Naturally incorporate key keywords, grab the reader's attention, and outline what will be discussed in the article.
-            ${toneInstruction} Format in markdown.`,
-            
-        mainContent: `Write a detailed main content section (exactly ${wordCount} words) for an article about "${topic}".
-            Focus on providing valuable and actionable information with appropriate H2 and H3 headings.
-            Include statistics, examples, and personal experiences. ${toneInstruction} Format in markdown.`,
-            
-        conclusion: `Write a strong conclusion (exactly ${wordCount} words) for an article about "${topic}".
-            Summarize the key points and include a call to action. ${toneInstruction} Format in markdown.`,
-            
-        faq: `Write a FAQ section (exactly ${wordCount} words) with 5 common questions and detailed answers about "${topic}".
-            Format in markdown with H2 for "Frequently Asked Questions" and each question in H3. ${toneInstruction}`
+        introduction: {
+            english: `Write an engaging introduction (exactly ${wordCount} words) for an article about "${topic}". 
+                Naturally incorporate key keywords, grab the reader's attention, and outline what will be discussed in the article.
+                ${toneInstruction} Format in markdown.`,
+            malay: `Tulis pengenalan yang menarik (tepat ${wordCount} patah perkataan) untuk artikel mengenai "${topic}". 
+                Masukkan kata kunci utama secara semula jadi, tarik perhatian pembaca, dan gariskan apa yang akan dibincangkan dalam artikel.
+                ${toneInstruction} Format dalam markdown.`
+        },
+        mainContent: {
+            english: `Write a detailed main content section (exactly ${wordCount} words) for an article about "${topic}".
+                Focus on providing valuable and actionable information with appropriate H2 and H3 headings.
+                Include statistics, examples, and personal experiences. ${toneInstruction} Format in markdown.`,
+            malay: `Tulis bahagian kandungan utama yang terperinci (tepat ${wordCount} patah perkataan) untuk artikel mengenai "${topic}".
+                Fokus pada memberikan maklumat yang berharga dan boleh dilaksanakan dengan tajuk H2 dan H3 yang sesuai.
+                Sertakan statistik, contoh, dan pengalaman peribadi. ${toneInstruction} Format dalam markdown.`
+        },
+        conclusion: {
+            english: `Write a strong conclusion (exactly ${wordCount} words) for an article about "${topic}".
+                Summarize the key points and include a call to action. ${toneInstruction} Format in markdown.`,
+            malay: `Tulis kesimpulan yang kuat (tepat ${wordCount} patah perkataan) untuk artikel mengenai "${topic}".
+                Ringkaskan poin-poin utama dan sertakan seruan untuk bertindak. ${toneInstruction} Format dalam markdown.`
+        },
+        faq: {
+            english: `Write a FAQ section (exactly ${wordCount} words) with 5 common questions and detailed answers about "${topic}".
+                Format in markdown with H2 for "Frequently Asked Questions" and each question in H3. ${toneInstruction}`,
+            malay: `Tulis bahagian Soalan Lazim (tepat ${wordCount} patah perkataan) dengan 5 soalan umum dan jawapan terperinci mengenai "${topic}".
+                Format dalam markdown dengan H2 untuk "Soalan Lazim" dan setiap soalan dalam H3. ${toneInstruction}`
+        }
     };
     
-    return prompts[section];
+    return prompts[section][language];
 }
 
 async function generateBlog() {
@@ -307,17 +361,19 @@ async function generateBlog() {
     // Save API key
     localStorage.setItem(LOCAL_STORAGE_KEYS.API_KEY, apiKey);
     
-    // Get model, temperature, and tone settings
+    // Get model, temperature, tone, and language settings
     const model = document.getElementById('modelSelect')?.value || 'google/learnlm-1.5-pro-experimental:free';
     const temperature = parseFloat(document.getElementById('temperatureSlider')?.value || 0.7);
     const targetWordCount = parseInt(document.getElementById('wordCountTarget')?.value || 2000);
     const tone = document.getElementById('toneSelect')?.value || 'personal';
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
     // Save preferences
     localStorage.setItem(LOCAL_STORAGE_KEYS.MODEL, model);
     localStorage.setItem(LOCAL_STORAGE_KEYS.TEMPERATURE, temperature);
     localStorage.setItem(LOCAL_STORAGE_KEYS.WORD_COUNT, targetWordCount);
     localStorage.setItem(LOCAL_STORAGE_KEYS.TONE, tone);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.LANGUAGE, language);
     
     // Show loading spinner
     document.getElementById('loadingSpinner').style.display = 'block';
@@ -330,7 +386,9 @@ async function generateBlog() {
     document.getElementById('saveButton').style.display = 'none';
     
     // Set article title
-    document.getElementById('articleTitle').textContent = `Article: ${topic}`;
+    document.getElementById('articleTitle').textContent = language === 'english' ? 
+        `Article: ${topic}` : 
+        `Artikel: ${topic}`;
     
     startProgressAnimation();
 
@@ -344,10 +402,10 @@ async function generateBlog() {
         
         // Generate content in segments
         const segments = [
-            { type: 'introduction', words: introWords, status: 'Generating introduction...' },
-            { type: 'mainContent', words: mainContentWords, status: 'Generating main content...' },
-            { type: 'conclusion', words: conclusionWords, status: 'Generating conclusion...' },
-            { type: 'faq', words: faqWords, status: 'Generating FAQ section...' }
+            { type: 'introduction', words: introWords, status: language === 'english' ? 'Generating introduction...' : 'Menjana pengenalan...' },
+            { type: 'mainContent', words: mainContentWords, status: language === 'english' ? 'Generating main content...' : 'Menjana kandungan utama...' },
+            { type: 'conclusion', words: conclusionWords, status: language === 'english' ? 'Generating conclusion...' : 'Menjana kesimpulan...' },
+            { type: 'faq', words: faqWords, status: language === 'english' ? 'Generating FAQ section...' : 'Menjana bahagian Soalan Lazim...' }
         ];
 
         let fullContent = '';
@@ -357,7 +415,7 @@ async function generateBlog() {
             // Update status
             document.getElementById('generationStatus').textContent = segment.status;
             
-            const prompt = createSegmentPrompt(topic, segment.type, segment.words, tone);
+            const prompt = createSegmentPrompt(topic, segment.type, segment.words, tone, language);
             const content = await generateSegment(prompt, apiKey, model, temperature);
             fullContent += content + '\n\n';
             
@@ -367,17 +425,26 @@ async function generateBlog() {
         }
 
         // Update status for metadata generation
-        document.getElementById('generationStatus').textContent = 'Generating SEO metadata...';
+        document.getElementById('generationStatus').textContent = language === 'english' ? 'Generating SEO metadata...' : 'Menjana metadata SEO...';
         
         // Generate SEO metadata
-        const metadataPrompt = `For an article about "${topic}", generate:
+        const metadataPrompt = language === 'english' ?
+            `For an article about "${topic}", generate:
             - Focus Keywords: (primary keyword + 2-3 secondary keywords)
             - SEO Title: (50-60 characters, include power words + numbers, make it sound personal)
             - Slug: (3-4 words with main keyword)
             - Meta Description: (150-155 characters, include a personal call to action using "I" or "my" perspective)
             - Suggested Image Alt Text: (2-3 examples that sound personal and conversational)
             
-            Write all of this in a personal, colloquial style as if you're sharing your own thoughts and experiences.`;
+            Write all of this in a personal, colloquial style as if you're sharing your own thoughts and experiences.` :
+            `Untuk artikel mengenai "${topic}", hasilkan:
+            - Kata Kunci Fokus: (kata kunci utama + 2-3 kata kunci sekunder)
+            - Tajuk SEO: (50-60 aksara, sertakan kata-kata kuat + angka, buatnya kedengaran peribadi)
+            - Slug: (3-4 perkataan dengan kata kunci utama)
+            - Penerangan Meta: (150-155 aksara, sertakan seruan tindakan peribadi menggunakan perspektif "Saya" atau "aku")
+            - Cadangan Teks Alt Imej: (2-3 contoh yang kedengaran peribadi dan perbualan)
+            
+            Tulis semua ini dalam gaya peribadi dan sehari-hari seolah-olah anda berkongsi pemikiran dan pengalaman anda sendiri.`;
 
         const metadata = await generateSegment(metadataPrompt, apiKey, model, temperature);
         
@@ -385,20 +452,23 @@ async function generateBlog() {
         displayContent(fullContent, metadata, topic);
         
         // Show success message
-        showSuccess('Article successfully generated!');
+        showSuccess(language === 'english' ? 'Article successfully generated!' : 'Artikel berjaya dihasilkan!');
     } catch (error) {
         console.error('Generation Error:', error);
-        showError('Error generating content: ' + error.message);
+        showError(language === 'english' ? 'Error generating content: ' + error.message : 'Ralat menjana kandungan: ' + error.message);
         document.getElementById('loadingSpinner').style.display = 'none';
     }
 }
 
 function validateInputs(topic, apiKey) {
     let isValid = true;
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
     // Validate topic
     if (!topic) {
-        document.getElementById('topicError').textContent = 'Please enter an article topic';
+        document.getElementById('topicError').textContent = language === 'english' ? 
+            'Please enter an article topic' : 
+            'Sila masukkan topik artikel';
         document.getElementById('topicError').classList.add('visible');
         isValid = false;
     } else {
@@ -407,7 +477,9 @@ function validateInputs(topic, apiKey) {
     
     // Validate API key
     if (!apiKey) {
-        document.getElementById('apiKeyError').textContent = 'Please enter your OpenRouter API key';
+        document.getElementById('apiKeyError').textContent = language === 'english' ? 
+            'Please enter your OpenRouter API key' : 
+            'Sila masukkan kunci API OpenRouter anda';
         document.getElementById('apiKeyError').classList.add('visible');
         isValid = false;
     } else {
@@ -498,13 +570,16 @@ function displayContent(articleContent, metadata, topic) {
     const blogContent = document.getElementById('blogContent');
     const seoMetadata = document.getElementById('seoMetadataContent');
     const wordCountElement = document.getElementById('wordCount');
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
     // Calculate word count
     const wordCount = getWordCount(articleContent);
     const targetWordCount = parseInt(document.getElementById('wordCountTarget')?.value || 2000);
     
     // Display word count with appropriate styling
-    wordCountElement.textContent = `Total Word Count: ${wordCount} words`;
+    wordCountElement.textContent = language === 'english' ? 
+        `Total Word Count: ${wordCount} words` : 
+        `Jumlah Kiraan Perkataan: ${wordCount} perkataan`;
     wordCountElement.className = 'word-count';
     
     if (Math.abs(wordCount - targetWordCount) > targetWordCount * 0.1) {
@@ -541,25 +616,32 @@ function displayContent(articleContent, metadata, topic) {
     document.getElementById('downloadButton').style.display = 'block';
     document.getElementById('saveButton').style.display = 'block';
     
+    // Update SEO Metadata heading
+    document.querySelector('.seo-metadata h3').innerHTML = language === 'english' ? 
+        '<i class="fas fa-search"></i> SEO Metadata' : 
+        '<i class="fas fa-search"></i> Metadata SEO';
+    
     // Store current article in session storage for potential saving
     sessionStorage.setItem('currentArticle', JSON.stringify({
         topic: topic,
         content: articleContent,
         metadata: metadata,
         wordCount: wordCount,
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
+        language: language
     }));
 }
 
 function copyContent() {
     const blogContent = document.getElementById('blogContent').innerText;
     const seoMetadata = document.getElementById('seoMetadataContent').innerText;
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
-    const fullContent = `${blogContent}\n\n--- SEO Metadata ---\n${seoMetadata}`;
+    const fullContent = `${blogContent}\n\n--- ${language === 'english' ? 'SEO Metadata' : 'Metadata SEO'} ---\n${seoMetadata}`;
     
     navigator.clipboard.writeText(fullContent)
-        .then(() => showSuccess('Content copied to clipboard!'))
-        .catch(err => showError('Failed to copy content: ' + err));
+        .then(() => showSuccess(language === 'english' ? 'Content copied to clipboard!' : 'Kandungan disalin ke papan keratan!'))
+        .catch(err => showError(language === 'english' ? 'Failed to copy content: ' + err : 'Gagal menyalin kandungan: ' + err));
 }
 
 function printArticle() {
@@ -570,8 +652,9 @@ function downloadArticle() {
     const blogContent = document.getElementById('blogContent').innerText;
     const seoMetadata = document.getElementById('seoMetadataContent').innerText;
     const topic = document.getElementById('topic').value.trim();
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
-    const fullContent = `# ${topic}\n\n${blogContent}\n\n## SEO Metadata\n\n${seoMetadata}`;
+    const fullContent = `# ${topic}\n\n${blogContent}\n\n## ${language === 'english' ? 'SEO Metadata' : 'Metadata SEO'}\n\n${seoMetadata}`;
     
     // Create a blob and download link
     const blob = new Blob([fullContent], { type: 'text/markdown' });
@@ -592,15 +675,16 @@ function downloadArticle() {
         URL.revokeObjectURL(url);
     }, 100);
     
-    showSuccess('Article has been downloaded!');
+    showSuccess(language === 'english' ? 'Article has been downloaded!' : 'Artikel telah dimuat turun!');
 }
 
 function loadSavedArticles() {
     const savedArticles = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.SAVED_ARTICLES) || '[]');
     const articlesList = document.getElementById('articlesList');
+    const language = document.getElementById('languageSelect')?.value || 'english';
     
     if (savedArticles.length === 0) {
-        articlesList.innerHTML = '<p class="empty-state">No saved articles.</p>';
+        articlesList.innerHTML = `<p class="empty-state">${language === 'english' ? 'No saved articles.' : 'Tiada artikel tersimpan.'}</p>`;
         return;
     }
     
@@ -613,7 +697,8 @@ function loadSavedArticles() {
             <h4>${article.topic}</h4>
             <div class="article-meta">
                 <span>${new Date(article.date).toLocaleDateString()}</span>
-                <span>${article.wordCount} words</span>
+                <span>${article.wordCount} ${article.language === 'malay' ? 'perkataan' : 'words'}</span>
+                ${article.language ? `<span class="article-language">${article.language === 'malay' ? 'Bahasa Malaysia' : 'English'}</span>` : ''}
             </div>
         </div>
     `).join('');
@@ -633,8 +718,17 @@ function loadArticle(article) {
     // Set topic
     document.getElementById('topic').value = article.topic;
     
+    // Set language if available
+    if (article.language && document.getElementById('languageSelect')) {
+        document.getElementById('languageSelect').value = article.language;
+        localStorage.setItem(LOCAL_STORAGE_KEYS.LANGUAGE, article.language);
+    }
+    
     // Set article title
-    document.getElementById('articleTitle').textContent = `Article: ${article.topic}`;
+    const language = article.language || 'english';
+    document.getElementById('articleTitle').textContent = language === 'english' ? 
+        `Article: ${article.topic}` : 
+        `Artikel: ${article.topic}`;
     
     // Display content
     displayContent(article.content, article.metadata, article.topic);
@@ -642,13 +736,15 @@ function loadArticle(article) {
     // Scroll to output section
     document.querySelector('.output-section').scrollIntoView({ behavior: 'smooth' });
     
-    showSuccess('Article loaded!');
+    // Show success message
+    showSuccess(language === 'english' ? 'Article loaded!' : 'Artikel dimuat!');
 }
 
 function saveArticle() {
     const currentArticle = JSON.parse(sessionStorage.getItem('currentArticle') || 'null');
     if (!currentArticle) {
-        showError('No article to save');
+        const language = document.getElementById('languageSelect')?.value || 'english';
+        showError(language === 'english' ? 'No article to save' : 'Tiada artikel untuk disimpan');
         return;
     }
     
@@ -670,7 +766,112 @@ function saveArticle() {
     // Reload saved articles list
     loadSavedArticles();
     
-    showSuccess('Article successfully saved!');
+    // Show success message
+    const language = currentArticle.language || 'english';
+    showSuccess(language === 'english' ? 'Article successfully saved!' : 'Artikel berjaya disimpan!');
+}
+
+function updateUILanguage() {
+    const language = document.getElementById('languageSelect')?.value || 'english';
+    
+    // Update input labels and placeholders
+    document.getElementById('topicLabel').textContent = language === 'english' ? 'Article Topic:' : 'Topik Artikel:';
+    document.getElementById('topic').placeholder = language === 'english' ? 
+        'Enter your article topic' : 'Masukkan topik artikel anda';
+    
+    document.getElementById('apiKeyLabel').textContent = language === 'english' ? 'OpenRouter API Key:' : 'Kunci API OpenRouter:';
+    document.getElementById('apiKey').placeholder = language === 'english' ? 
+        'Enter your API key' : 'Masukkan kunci API anda';
+    
+    document.getElementById('apiKeyHelp').innerHTML = language === 'english' ? 
+        'Get your API key at <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a>' : 
+        'Dapatkan kunci API anda di <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a>';
+    
+    // Update advanced settings labels
+    document.getElementById('advancedSettingsLabel').textContent = language === 'english' ? 
+        'Advanced Settings' : 'Tetapan Lanjutan';
+    
+    document.getElementById('modelSelectLabel').textContent = language === 'english' ? 
+        'AI Model:' : 'Model AI:';
+    
+    document.getElementById('temperatureLabel').textContent = language === 'english' ? 
+        'Creativity (Temperature):' : 'Kreativiti (Suhu):';
+    
+    document.getElementById('wordCountLabel').textContent = language === 'english' ? 
+        'Target Word Count:' : 'Sasaran Bilangan Perkataan:';
+    
+    document.getElementById('toneSelectLabel').textContent = language === 'english' ? 
+        'Writing Tone:' : 'Nada Penulisan:';
+    
+    document.getElementById('languageSelectLabel').textContent = language === 'english' ? 
+        'Output Language:' : 'Bahasa Output:';
+    
+    // Update tone select options
+    const toneSelect = document.getElementById('toneSelect');
+    const currentTone = toneSelect.value;
+    
+    // Save current options
+    const toneOptions = {
+        personal: language === 'english' ? 'Personal & Colloquial' : 'Peribadi & Sehari-hari',
+        conversational: language === 'english' ? 'Conversational' : 'Perbualan',
+        casual: language === 'english' ? 'Casual' : 'Santai',
+        professional: language === 'english' ? 'Professional' : 'Profesional',
+        academic: language === 'english' ? 'Academic' : 'Akademik',
+        persuasive: language === 'english' ? 'Persuasive' : 'Meyakinkan'
+    };
+    
+    // Update options
+    toneSelect.innerHTML = '';
+    Object.entries(toneOptions).forEach(([value, text]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        toneSelect.appendChild(option);
+    });
+    
+    // Restore selected value
+    toneSelect.value = currentTone;
+    
+    // Update buttons
+    document.getElementById('generateButton').innerHTML = language === 'english' ? 
+        '<i class="fas fa-magic"></i> Generate Article' : 
+        '<i class="fas fa-magic"></i> Jana Artikel';
+    
+    document.getElementById('clearCacheButton').innerHTML = language === 'english' ? 
+        '<i class="fas fa-trash"></i> Clear Saved API Key' : 
+        '<i class="fas fa-trash"></i> Padam Kunci API Tersimpan';
+    
+    // Update save modal text
+    document.getElementById('saveModalTitle').textContent = language === 'english' ? 'Save Article' : 'Simpan Artikel';
+    document.getElementById('articleNameLabel').textContent = language === 'english' ? 'Article Name:' : 'Nama Artikel:';
+    document.getElementById('articleName').placeholder = language === 'english' ? 
+        'Enter a name for this article' : 'Masukkan nama untuk artikel ini';
+    document.getElementById('saveArticleButton').textContent = language === 'english' ? 'Save' : 'Simpan';
+    
+    // Update saved articles section
+    document.querySelector('#savedArticles h3').innerHTML = language === 'english' ? 
+        '<i class="fas fa-history"></i> Saved Articles' : 
+        '<i class="fas fa-history"></i> Artikel Tersimpan';
+    
+    // Update SEO metadata heading if it exists
+    const seoHeading = document.querySelector('.seo-metadata h3');
+    if (seoHeading) {
+        seoHeading.innerHTML = language === 'english' ? 
+            '<i class="fas fa-search"></i> SEO Metadata' : 
+            '<i class="fas fa-search"></i> Metadata SEO';
+    }
+    
+    // Update article title if it's the default
+    const articleTitle = document.getElementById('articleTitle');
+    if (articleTitle.textContent === 'Your Article' || articleTitle.textContent === 'Artikel Anda') {
+        articleTitle.textContent = language === 'english' ? 'Your Article' : 'Artikel Anda';
+    }
+    
+    // Update empty state text for saved articles
+    const emptyState = document.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.textContent = language === 'english' ? 'No saved articles.' : 'Tiada artikel tersimpan.';
+    }
 }
 
 // Add CSS for toast notifications
