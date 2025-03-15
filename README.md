@@ -9,12 +9,13 @@ A powerful web-based tool that leverages OpenRouter API to generate high-quality
 ## 🌟 Features
 
 - **AI-Powered Content Generation**: Create comprehensive articles with introduction, main content, conclusion, and FAQ sections
+- **Personal Writing Style**: Generate content in a personal, first-person voice with colloquial expressions and conversational tone
 - **SEO Optimization**: Automatically generates SEO metadata including focus keywords, meta descriptions, and image alt text
 - **Customizable Settings**:
   - Multiple AI models to choose from (Claude, GPT, Llama, etc.)
   - Adjustable creativity level (temperature)
   - Target word count control
-  - Writing tone selection (Professional, Casual, Academic, Conversational, Persuasive)
+  - Writing tone selection (Personal & Colloquial, Conversational, Casual, Professional, Academic, Persuasive)
 - **Content Management**:
   - Save articles locally
   - Load previously saved articles
@@ -85,13 +86,20 @@ The application uses a modular approach with separate files:
 - Added keyboard shortcuts
 - Fixed various bugs and improved error handling
 
-### Version 1.2.0 (Current)
+### Version 1.2.0 (2024-06-30)
 - Added more AI model options
 - Improved responsive design for mobile devices
 - Enhanced SEO metadata generation
 - Added progress tracking during generation
 - Fixed theme toggle issues
 - Added comprehensive documentation
+
+### Version 1.3.0 (Current)
+- Added personal, colloquial writing style as the default tone
+- Enhanced prompts to generate more authentic, first-person content
+- Improved SEO metadata to match the personal writing style
+- Increased default creativity setting for more natural language
+- Updated UI to prioritize personal writing options
 
 ## 🔮 Planned Features
 

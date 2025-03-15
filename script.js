@@ -270,10 +270,11 @@ function createSegmentPrompt(topic, section, wordCount, tone) {
         casual: "Use a relaxed, conversational tone with simple language and occasional colloquialisms.",
         academic: "Use a scholarly tone with precise language, citations, and well-structured arguments.",
         conversational: "Write as if having a friendly conversation with the reader, using questions and personal pronouns.",
-        persuasive: "Use compelling language with strong calls to action and emotional appeals."
+        persuasive: "Use compelling language with strong calls to action and emotional appeals.",
+        personal: "Write in first person (I, me, my) with a highly personal, authentic voice. Use colloquial expressions, contractions, and casual language as if sharing your own experiences and thoughts with a friend. Include personal anecdotes and relatable examples where appropriate."
     };
     
-    const toneInstruction = toneInstructions[tone] || toneInstructions.professional;
+    const toneInstruction = toneInstructions[tone] || toneInstructions.personal;
     
     const prompts = {
         introduction: `Write an engaging introduction (exactly ${wordCount} words) for an article about "${topic}". 
@@ -282,7 +283,7 @@ function createSegmentPrompt(topic, section, wordCount, tone) {
             
         mainContent: `Write a detailed main content section (exactly ${wordCount} words) for an article about "${topic}".
             Focus on providing valuable and actionable information with appropriate H2 and H3 headings.
-            Include statistics, examples, and expert opinions. ${toneInstruction} Format in markdown.`,
+            Include statistics, examples, and personal experiences. ${toneInstruction} Format in markdown.`,
             
         conclusion: `Write a strong conclusion (exactly ${wordCount} words) for an article about "${topic}".
             Summarize the key points and include a call to action. ${toneInstruction} Format in markdown.`,
@@ -310,7 +311,7 @@ async function generateBlog() {
     const model = document.getElementById('modelSelect')?.value || 'google/learnlm-1.5-pro-experimental:free';
     const temperature = parseFloat(document.getElementById('temperatureSlider')?.value || 0.7);
     const targetWordCount = parseInt(document.getElementById('wordCountTarget')?.value || 2000);
-    const tone = document.getElementById('toneSelect')?.value || 'professional';
+    const tone = document.getElementById('toneSelect')?.value || 'personal';
     
     // Save preferences
     localStorage.setItem(LOCAL_STORAGE_KEYS.MODEL, model);
@@ -371,10 +372,12 @@ async function generateBlog() {
         // Generate SEO metadata
         const metadataPrompt = `For an article about "${topic}", generate:
             - Focus Keywords: (primary keyword + 2-3 secondary keywords)
-            - SEO Title: (50-60 characters, include power words + numbers)
+            - SEO Title: (50-60 characters, include power words + numbers, make it sound personal)
             - Slug: (3-4 words with main keyword)
-            - Meta Description: (150-155 characters, include a call to action)
-            - Suggested Image Alt Text: (2-3 examples)`;
+            - Meta Description: (150-155 characters, include a personal call to action using "I" or "my" perspective)
+            - Suggested Image Alt Text: (2-3 examples that sound personal and conversational)
+            
+            Write all of this in a personal, colloquial style as if you're sharing your own thoughts and experiences.`;
 
         const metadata = await generateSegment(metadataPrompt, apiKey, model, temperature);
         
