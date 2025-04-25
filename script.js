@@ -362,7 +362,7 @@ async function generateBlog() {
     localStorage.setItem(LOCAL_STORAGE_KEYS.API_KEY, apiKey);
     
     // Get model, temperature, tone, and language settings
-    const model = document.getElementById('modelSelect')?.value || 'google/learnlm-1.5-pro-experimental:free';
+    const model = document.getElementById('modelSelect')?.value || 'google/gemini-2.0-flash-exp:free';
     const temperature = parseFloat(document.getElementById('temperatureSlider')?.value || 0.7);
     const targetWordCount = parseInt(document.getElementById('wordCountTarget')?.value || 2000);
     const tone = document.getElementById('toneSelect')?.value || 'personal';
