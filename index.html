@@ -45,16 +45,9 @@
                 <details>
                     <summary id="advancedSettingsLabel">Advanced Settings</summary>
                     <div class="form-group">
-                        <label for="modelSelect" id="modelSelectLabel">AI Model:</label>
-                        <select id="modelSelect">
-                            <option value="google/gemini-2.0-flash-exp:free">Google Gemini 2.0 Flash (Free)</option>
-                            <option value="google/gemini-2.0-flash-001">Google Gemini 2.0 Flash 001</option>
-                            <option value="google/learnlm-1.5-pro-experimental:free">Google LearnLM 1.5 Pro (Free)</option>
-                            <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Free)</option>
-                            <option value="meta-llama/llama-3-70b-instruct:free">Llama 3 70B (Free)</option>
-                            <option value="anthropic/claude-3-opus:free">Claude 3 Opus (Free)</option>
-                            <option value="anthropic/claude-3-sonnet:free">Claude 3 Sonnet (Free)</option>
-                        </select>
+                        <label for="modelInput" id="modelInputLabel">AI Model:</label>
+                        <input type="text" id="modelInput" placeholder="Enter OpenRouter model ID (e.g. anthropic/claude-3-opus:free)" value="google/gemini-2.0-flash-exp:free" aria-required="true">
+                        <small class="help-text">Enter an OpenRouter model ID such as: google/gemini-2.0-flash-exp:free, anthropic/claude-3-haiku:free, meta-llama/llama-3-70b-instruct:free, anthropic/claude-3-opus:free, or anthropic/claude-3-sonnet:free. See <a href="https://openrouter.ai/docs#models" target="_blank" rel="noopener noreferrer">available models</a>.</small>
                     </div>
                     <div class="form-group">
                         <label for="temperatureSlider" id="temperatureLabel">Creativity (Temperature):</label>

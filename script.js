@@ -72,8 +72,10 @@ function loadSavedSettings() {
     
     // Load model preference
     const savedModel = localStorage.getItem(LOCAL_STORAGE_KEYS.MODEL);
-    if (savedModel && document.getElementById('modelSelect')) {
-        document.getElementById('modelSelect').value = savedModel;
+    if (savedModel) {
+        if (document.getElementById('modelInput')) {
+            document.getElementById('modelInput').value = savedModel;
+        }
     }
     
     // Load temperature preference
@@ -138,10 +140,10 @@ function initializeEventListeners() {
         });
     }
     
-    // Model select
-    const modelSelect = document.getElementById('modelSelect');
-    if (modelSelect) {
-        modelSelect.addEventListener('change', (e) => {
+    // Model input
+    const modelInput = document.getElementById('modelInput');
+    if (modelInput) {
+        modelInput.addEventListener('change', (e) => {
             localStorage.setItem(LOCAL_STORAGE_KEYS.MODEL, e.target.value);
         });
     }
@@ -362,7 +364,7 @@ async function generateBlog() {
     localStorage.setItem(LOCAL_STORAGE_KEYS.API_KEY, apiKey);
     
     // Get model, temperature, tone, and language settings
-    const model = document.getElementById('modelSelect')?.value || 'google/gemini-2.0-flash-exp:free';
+    const model = document.getElementById('modelInput')?.value || 'google/gemini-2.0-flash-exp:free';
     const temperature = parseFloat(document.getElementById('temperatureSlider')?.value || 0.7);
     const targetWordCount = parseInt(document.getElementById('wordCountTarget')?.value || 2000);
     const tone = document.getElementById('toneSelect')?.value || 'personal';
@@ -791,8 +793,15 @@ function updateUILanguage() {
     document.getElementById('advancedSettingsLabel').textContent = language === 'english' ? 
         'Advanced Settings' : 'Tetapan Lanjutan';
     
-    document.getElementById('modelSelectLabel').textContent = language === 'english' ? 
+    document.getElementById('modelInputLabel').textContent = language === 'english' ? 
         'AI Model:' : 'Model AI:';
+    
+    const modelHelpText = document.querySelector('#modelInput + .help-text');
+    if (modelHelpText) {
+        modelHelpText.innerHTML = language === 'english' ?
+            'Enter an OpenRouter model ID such as: google/gemini-2.0-flash-exp:free, anthropic/claude-3-haiku:free, meta-llama/llama-3-70b-instruct:free, anthropic/claude-3-opus:free, or anthropic/claude-3-sonnet:free. See <a href="https://openrouter.ai/docs#models" target="_blank" rel="noopener noreferrer">available models</a>.' :
+            'Masukkan ID model OpenRouter seperti: google/gemini-2.0-flash-exp:free, anthropic/claude-3-haiku:free, meta-llama/llama-3-70b-instruct:free, anthropic/claude-3-opus:free, atau anthropic/claude-3-sonnet:free. Lihat <a href="https://openrouter.ai/docs#models" target="_blank" rel="noopener noreferrer">model yang tersedia</a>.';
+    }
     
     document.getElementById('temperatureLabel').textContent = language === 'english' ? 
         'Creativity (Temperature):' : 'Kreativiti (Suhu):';
